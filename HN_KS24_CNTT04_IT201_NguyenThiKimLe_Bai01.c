@@ -21,6 +21,7 @@ typedef struct Queue {
 
 Queue* createQueue(int capacity) {
     Queue* queue = (Queue*)malloc(capacity * sizeof(Queue));
+    queue->requests = (Request*)malloc(capacity * sizeof(Request));
     queue -> front = 1;
     queue -> rear = 0;
     queue -> capacity = capacity;
@@ -34,7 +35,7 @@ int isQueueEmpty(Queue* queue) {
     return 0;
 }
 int isQueueFull(Queue* queue) {
-    if (queue -> rear ==  queue -> capacity) {
+    if (queue -> rear >=  queue -> capacity -1) {
         return 1;
     }
     return 0;
@@ -69,6 +70,7 @@ void printQueue(Queue* queue) {
 }
 Stack* createStack(int size) {
     Stack* stack = (Stack*)malloc(size * sizeof(Stack));
+    stack->requests = (Request*)malloc(size * sizeof(Request));
     stack -> top = -1;
     stack -> size = size;
     return stack;
@@ -131,16 +133,17 @@ int main() {
                 enqueue(requestQueue, newRequest);
                 break;
             case 2:
-                dequeue(requestQueue);
-                push(requestStack, requestQueue -> requests[requestQueue ->front]);
+                if (!isQueueEmpty(requestQueue)) {
+                    push(requestStack, requestQueue->requests[requestQueue->front]);
+                    dequeue(requestQueue);
+                }
                 break;
             case 3:
+                Request lastProcessed = requestStack->requests[requestStack->top];
                 pop(requestStack);
-
+                enqueue(requestQueue, lastProcessed);
                 break;
             case 4:
-                printQueue(requestQueue);
-                enqueue(requestStack, requestQueue -> requests[requestQueue ->front]);
                 printQueue(requestQueue);
                 break;
             case 5:
